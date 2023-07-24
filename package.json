@@ -1,6 +1,6 @@
 {
   "name": "transfa-sdk",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Official Node SDK that makes integration with the Transfa API easier.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -29,7 +29,7 @@
   "dependencies": {
     "axios": "^1.4.0",
     "crypto-js": "^4.1.1",
-    "transfa-sdk": "^1.0.0",
+    "transfa-sdk": "^1.0.1",
     "uuidv4": "^6.2.13"
   }
 }
