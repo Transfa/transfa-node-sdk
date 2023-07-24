@@ -1,5 +1,5 @@
 import { AxiosRequestConfig, AxiosResponse } from "axios";
-import TransfaAPIClient from "../apiClient";
+import { TransfaAPIClient } from "../apiClient";
 import { PaymentTypeEnum } from "../types/enums";
 import { uuid } from "uuidv4";
 
