@@ -1,15 +1,13 @@
 {
-  "name": "transfa-node-sdk",
+  "name": "transfa-sdk",
   "version": "1.0.0",
-  "type": "module",
   "description": "Official Node SDK that makes integration with the Transfa API easier.",
   "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
     "prepublish": "npm run build",
     "build": "tsc",
-    "watch": "tsc -w",
-    "main": "dist/index.js",
-    "types": "dist/index.d.ts"
+    "watch": "tsc -w"
   },
   "repository": {
     "type": "git",
@@ -31,6 +29,7 @@
   "dependencies": {
     "axios": "^1.4.0",
     "crypto-js": "^4.1.1",
+    "transfa-sdk": "^1.0.0",
     "uuidv4": "^6.2.13"
   }
 }
