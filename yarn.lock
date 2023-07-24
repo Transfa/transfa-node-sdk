@@ -780,6 +780,16 @@ transfa-sdk@^1.0.2:
     transfa-sdk "^1.0.1"
     uuidv4 "^6.2.13"
 
+transfa-sdk@^1.0.3:
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/transfa-sdk/-/transfa-sdk-1.0.3.tgz#a0e25fd5a0c7fc0d593cbe9b21d0d8c918a68269"
+  integrity sha512-KvSojeENgXQ0XB8dnbSSPeFdFH5VTo8/+QzyCigGZJYHqSMNPZ0ZayypV2/jrRUf3mheex+MkLSSEZFLpL/JVw==
+  dependencies:
+    axios "^1.4.0"
+    crypto-js "^4.1.1"
+    transfa-sdk "^1.0.2"
+    uuidv4 "^6.2.13"
+
 ts-node@^10.9.1:
   version "10.9.1"
   resolved "https://registry.yarnpkg.com/ts-node/-/ts-node-10.9.1.tgz#e73de9102958af9e1f0b168a6ff320e25adcff4b"
