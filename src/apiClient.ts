@@ -51,7 +51,7 @@ export class TransfaAPIClient {
     /**
      * can't do if(requestPayload) because requestPayload can be equal to 0 😃
      */
-    if (requestPayload !== undefined || requestPayload !== null) {
+    if (requestPayload !== undefined && requestPayload !== null) {
       requestPayload = JSON.stringify(requestPayload);
       requestHeaders["content-type"] = "application/json;charset=utf-8";
     }
