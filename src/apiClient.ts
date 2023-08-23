@@ -34,34 +34,35 @@ export class TransfaAPIClient {
     method: AxiosRequestConfig["method"],
     endpoint: string,
     data?: any,
-    params?: any,
+    params: Record<string, any> = {},
     headers?: AxiosRequestConfig["headers"]
   ): Promise<AxiosResponse<T>> {
-    if (!params) {
-      params = {};
-    }
 
+    let requestPayload = data
     const url = this.getUrl(endpoint);
 
-    headers = {
+    const requestHeaders = {
       "user-agent": `Transfa API SDK-Node/${this.version}`,
       accept: "application/json",
       Authorization: `${this.authHeaderPrefix} ${this.apiKey}`,
       ...headers,
     };
 
-    if (data !== undefined) {
-      data = JSON.stringify(data);
-      headers["content-type"] = "application/json;charset=utf-8";
+    /**
+     * can't do if(requestPayload) because requestPayload can be equal to 0 😃
+     */
+    if (requestPayload !== undefined && requestPayload !== null) {
+      requestPayload = JSON.stringify(requestPayload);
+      requestHeaders["content-type"] = "application/json;charset=utf-8";
     }
 
     const config: AxiosRequestConfig = {
       method,
       url,
       params,
-      data,
+      data: requestPayload,
       timeout: this.timeout,
-      headers,
+      headers: requestHeaders,
       httpsAgent: this.verifySSL ? undefined : new (require("https").Agent)(),
     };
 
