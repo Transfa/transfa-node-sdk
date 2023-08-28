@@ -2,7 +2,7 @@ import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
 import PaymentResource from "./ressources/Payment";
 
 export const apiBase = "https://api.transfapp.com";
-export const defaultAuthHeaderBearer = "Bearer";
+export const defaultAuthHeaderBearer = "Api-Transfa-Key";
 
 export class TransfaAPIClient {
   private baseUrl: string = apiBase;
@@ -33,12 +33,11 @@ export class TransfaAPIClient {
   private async request<T>(
     method: AxiosRequestConfig["method"],
     endpoint: string,
-    data?: any,
-    params: Record<string, any> = {},
+    data?: unknown,
+    params: Record<string, unknown> = {},
     headers?: AxiosRequestConfig["headers"]
   ): Promise<AxiosResponse<T>> {
-
-    let requestPayload = data
+    let requestPayload = data;
     const url = this.getUrl(endpoint);
 
     const requestHeaders = {
@@ -48,9 +47,6 @@ export class TransfaAPIClient {
       ...headers,
     };
 
-    /**
-     * can't do if(requestPayload) because requestPayload can be equal to 0 😃
-     */
     if (requestPayload !== undefined && requestPayload !== null) {
       requestPayload = JSON.stringify(requestPayload);
       requestHeaders["content-type"] = "application/json;charset=utf-8";

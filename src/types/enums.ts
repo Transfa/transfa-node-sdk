@@ -7,6 +7,7 @@ export enum PaymentStatusEnum {
 
 export enum PaymentMode {
   MtnBenin = "mtn-benin",
+  MoovBenin = "moov-benin",
 }
 
 export enum PaymentTypeEnum {
