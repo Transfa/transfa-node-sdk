@@ -2,7 +2,7 @@ import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
 import PaymentResource from "./ressources/Payment";
 
 export const apiBase = "https://api.transfapp.com";
-export const defaultAuthHeaderBearer = "Bearer";
+export const defaultAuthHeaderBearer = "Api-Transfa-Key";
 
 export class TransfaAPIClient {
   private baseUrl: string = apiBase;
