@@ -1,7 +1,9 @@
 import * as cryptoJs from "crypto-js";
 import { TransfaHeadersIdentifiers } from "../types/enums";
+import hmacSHA512 from "crypto-js/hmac-sha512";
+import encUtf8 from "crypto-js/enc-utf8";
 
-export default class Webhook {
+export default class WebhookRessource {
   private webhookToken: string;
   private headers: Record<string, string>;
   private body: any;
@@ -40,8 +42,8 @@ export default class Webhook {
   }
 
   private signBody(body: string): string {
-    const secret = cryptoJs.enc.Utf8.parse(this.webhookToken);
-    const hash = cryptoJs.HmacSHA512(body, secret);
+    const secret = encUtf8.parse(this.webhookToken);
+    const hash = hmacSHA512(body, secret);
 
     return hash.toString(cryptoJs.enc.Hex);
   }
@@ -55,7 +57,6 @@ export default class Webhook {
 
   public verify(): any {
     const signature = this.headers[TransfaHeadersIdentifiers.WebhookSignature];
-
     if (!signature) {
       throw new Error("No signature provided. Contact technical support.");
     }
@@ -63,7 +64,6 @@ export default class Webhook {
     if (this.hasDataNotTempered(signature)) {
       return this.body;
     }
-
     return null;
   }
 }

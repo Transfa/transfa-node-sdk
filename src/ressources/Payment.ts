@@ -1,8 +1,7 @@
-import { AxiosRequestConfig, AxiosResponse } from "axios";
 import { TransfaAPIClient } from "../apiClient";
 import { PaymentTypeEnum } from "../types/enums";
 import { convertToCamelCase } from "../utils/adapters";
-import { uuid } from "uuidv4";
+import { v4 as uuidV4 } from "uuid";
 import {
   PaginateDataType,
   RequestPaymentPayloadType,
@@ -21,51 +20,46 @@ export default class PaymentResource {
   public requestPayment(
     data: RequestPaymentPayloadType,
     idempotencyKey?: string
-  ): Promise<AxiosResponse<any>> {
+  ): Promise<Response> {
     const url = `${this.baseUrl}/`;
+    const payload = { ...data };
 
-    const headers: AxiosRequestConfig["headers"] = {};
+    const headers: HeadersInit = {};
     if (idempotencyKey) {
       headers["Idempotency-Key"] = idempotencyKey;
     } else {
-      headers["Idempotency-Key"] = uuid();
+      headers["Idempotency-Key"] = uuidV4();
     }
 
-    data.type = PaymentTypeEnum.RequestPayment;
+    payload.type = PaymentTypeEnum.RequestPayment;
 
-    return this.api.post(url, data, headers);
+    return this.api.post(url, payload, headers);
   }
 
   public async list(
     adaptedData = true
-  ): Promise<AxiosResponse<PaginateDataType<RequestPaymentResponseType>>> {
+  ): Promise<PaginateDataType<RequestPaymentResponseType>> {
     const url = `${this.baseUrl}/`;
     const paymentList = await this.api.get<
       PaginateDataType<RequestPaymentResponseType>
     >(url);
-    if (adaptedData) {
-      paymentList.data.results.map((payment) => convertToCamelCase(payment));
-    }
-    return paymentList;
+    return paymentList.json();
   }
 
   public async retrieve(
     paymentId: string,
     adaptedData = true
-  ): Promise<AxiosResponse<RequestPaymentResponseType>> {
+  ): Promise<RequestPaymentResponseType> {
     const url = `${this.baseUrl}/${paymentId}/`;
     const payment = await this.api.get<RequestPaymentResponseType>(url);
-    if (adaptedData) {
-      return convertToCamelCase(payment);
-    }
-    return payment;
+
+    return payment.json();
   }
 
-  public refund(
-    paymentId: string
-  ): Promise<AxiosResponse<RequestPaymentResponseType>> {
+  public async refund(paymentId: string): Promise<RequestPaymentResponseType> {
     const url = `${this.baseUrl}/${paymentId}/refund/`;
-    return convertToCamelCase(this.api.post(url));
+    const refundData = await this.api.post(url);
+    return convertToCamelCase(refundData.json());
   }
 
   public async status(
@@ -73,11 +67,8 @@ export default class PaymentResource {
   ): Promise<{ status: string; financialStatus: string }> {
     try {
       const response = await this.retrieve(paymentId);
-      if (response.status !== 200) {
-        console.error(response.data);
-        throw new Error("Error retrieving payment status");
-      }
-      const { status, financialStatus } = convertToCamelCase(response.data);
+
+      const { status, financialStatus } = convertToCamelCase(response);
       return { status, financialStatus };
     } catch (error) {
       console.error(error);
