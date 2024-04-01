@@ -1,5 +1,5 @@
-import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
-import PaymentResource from "./ressources/Payment";
+import { Method } from "types";
+import PaymentResource from "./ressources/payment";
 
 export const apiBase = "https://api.transfapp.com";
 export const defaultAuthHeaderBearer = "Api-Transfa-Key";
@@ -9,61 +9,56 @@ export class TransfaAPIClient {
   private authHeaderPrefix: string = defaultAuthHeaderBearer;
   private version: string = "1.0.0";
   constructor(
-    private timeout: number = 5000,
-    private verifySSL: boolean = true,
-    private apiKey: string = "YOUR_API_KEY"
+    private apiKey: string = "YOUR_API_KEY",
+    private webhookToken: string
   ) {}
 
-  private getUrl(endpoint: string): string {
-    // Get URL for requests
-    let url = this.baseUrl;
+  private getUrl(endpoint: string, params?: Record<string, string>): string {
+    const baseUrl = this.baseUrl.endsWith("/")
+      ? this.baseUrl
+      : this.baseUrl + "/";
 
-    // Making sure URL is in the right format.
-    if (url.endsWith("/")) {
-      url = url.slice(0, -1);
-    }
+    const normalizedEndpoint = endpoint.startsWith("/")
+      ? endpoint.slice(1)
+      : endpoint;
 
-    if (endpoint.startsWith("/")) {
-      endpoint = endpoint.slice(1);
-    }
+    const queryString = new URLSearchParams(params).toString();
 
-    return `${url}/${endpoint}`;
+    return `${baseUrl}${normalizedEndpoint}${
+      queryString ? `?${queryString}` : ""
+    }`;
   }
 
   private async request<T>(
-    method: AxiosRequestConfig["method"],
+    method: Method,
     endpoint: string,
-    data?: unknown,
-    params: Record<string, unknown> = {},
-    headers?: AxiosRequestConfig["headers"]
-  ): Promise<AxiosResponse<T>> {
+    data?: BodyInit,
+    params?: Record<string, string>,
+    headers?: HeadersInit
+  ): Promise<Response> {
     let requestPayload = data;
-    const url = this.getUrl(endpoint);
+    const url = this.getUrl(endpoint, params);
 
-    const requestHeaders = {
+    const configHeaders: HeadersInit = {
       "user-agent": `Transfa API SDK-Node/${this.version}`,
       accept: "application/json",
-      Authorization: `${this.authHeaderPrefix} ${this.apiKey}`,
+      Authorization: `Bearer ${this.authHeaderPrefix} ${this.apiKey}`,
       ...headers,
     };
+    const requestHeaders = new Headers(configHeaders);
 
     if (requestPayload !== undefined && requestPayload !== null) {
       requestPayload = JSON.stringify(requestPayload);
-      requestHeaders["content-type"] = "application/json;charset=utf-8";
+      requestHeaders.append("content-type", "application/json;charset=utf-8");
     }
-
-    const config: AxiosRequestConfig = {
-      method,
-      url,
-      params,
-      data: requestPayload,
-      timeout: this.timeout,
+    const options: RequestInit = {
       headers: requestHeaders,
-      httpsAgent: this.verifySSL ? undefined : new (require("https").Agent)(),
+      body: requestPayload,
+      method,
     };
 
     try {
-      const response = await axios(config);
+      const response = await fetch(url, options);
       return response;
     } catch (error) {
       throw error;
@@ -73,16 +68,17 @@ export class TransfaAPIClient {
   public async post<T>(
     endpoint: string,
     data?: any,
-    headers?: AxiosRequestConfig["headers"]
-  ): Promise<AxiosResponse<T>> {
+    headers?: HeadersInit
+  ): Promise<Response> {
     return this.request<T>("POST", endpoint, data, undefined, headers);
   }
 
   public async get<T>(
     endpoint: string,
-    headers?: AxiosRequestConfig["headers"]
-  ): Promise<AxiosResponse<T>> {
+    headers?: HeadersInit
+  ): Promise<Response> {
     return this.request<T>("GET", endpoint, undefined, undefined, headers);
   }
+
   public Payment: PaymentResource = new PaymentResource(this);
 }
