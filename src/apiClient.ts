@@ -1,17 +1,14 @@
-import { Method } from "types";
-import PaymentResource from "./ressources/payment";
+import PaymentResource from "./transfa/ressources/payment";
+import { PACKAGE_VERSION } from "./transfa/configs/version";
 
-export const apiBase = "https://api.transfapp.com";
-export const defaultAuthHeaderBearer = "Api-Transfa-Key";
+import { Method } from "./transfa/types/types";
+import { TRANSFAPP_BASE_API_URL } from "transfa/configs/api_routes";
+import { TRANSFAPP_PACKAGE_USER_AGENT } from "transfa/constants";
 
 export class TransfaAPIClient {
-  private baseUrl: string = apiBase;
-  private authHeaderPrefix: string = defaultAuthHeaderBearer;
-  private version: string = "1.0.0";
-  constructor(
-    private apiKey: string = "YOUR_API_KEY",
-    private webhookToken: string
-  ) {}
+  private baseUrl: string = TRANSFAPP_BASE_API_URL;
+  private version: string = PACKAGE_VERSION;
+  constructor(private apiKey: string, private webhookToken: string) {}
 
   private getUrl(endpoint: string, params?: Record<string, string>): string {
     const baseUrl = this.baseUrl.endsWith("/")
@@ -40,9 +37,9 @@ export class TransfaAPIClient {
     const url = this.getUrl(endpoint, params);
 
     const configHeaders: HeadersInit = {
-      "user-agent": `Transfa API SDK-Node/${this.version}`,
+      "user-agent": `${TRANSFAPP_PACKAGE_USER_AGENT}/${this.version}`,
       accept: "application/json",
-      Authorization: `Bearer ${this.authHeaderPrefix} ${this.apiKey}`,
+      Authorization: `Bearer ${this.apiKey}`,
       ...headers,
     };
     const requestHeaders = new Headers(configHeaders);

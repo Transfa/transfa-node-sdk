@@ -1,12 +1,13 @@
-import { TransfaAPIClient } from "../apiClient";
-import { PaymentTypeEnum } from "../types/enums";
-import { convertToCamelCase } from "../utils/adapters";
 import { v4 as uuidV4 } from "uuid";
+
+import { TransfaAPIClient } from "apiClient";
+import { API_ROUTES } from "transfa/configs/api_routes";
 import {
   PaginateDataType,
   RequestPaymentPayloadType,
   RequestPaymentResponseType,
-} from "types";
+} from "transfa/types/types";
+import { PaymentTypeEnum } from "transfa/types/enums";
 
 export default class PaymentResource {
   private api: TransfaAPIClient;
@@ -14,7 +15,7 @@ export default class PaymentResource {
 
   constructor(api: TransfaAPIClient) {
     this.api = api;
-    this.baseUrl = "api/v1/optimus/payment";
+    this.baseUrl = API_ROUTES.payment_endpoint;
   }
 
   public requestPayment(
@@ -36,9 +37,7 @@ export default class PaymentResource {
     return this.api.post(url, payload, headers);
   }
 
-  public async list(
-    adaptedData = true
-  ): Promise<PaginateDataType<RequestPaymentResponseType>> {
+  public async list(): Promise<PaginateDataType<RequestPaymentResponseType>> {
     const url = `${this.baseUrl}/`;
     const paymentList = await this.api.get<
       PaginateDataType<RequestPaymentResponseType>
@@ -47,8 +46,7 @@ export default class PaymentResource {
   }
 
   public async retrieve(
-    paymentId: string,
-    adaptedData = true
+    paymentId: string
   ): Promise<RequestPaymentResponseType> {
     const url = `${this.baseUrl}/${paymentId}/`;
     const payment = await this.api.get<RequestPaymentResponseType>(url);
@@ -59,17 +57,17 @@ export default class PaymentResource {
   public async refund(paymentId: string): Promise<RequestPaymentResponseType> {
     const url = `${this.baseUrl}/${paymentId}/refund/`;
     const refundData = await this.api.post(url);
-    return convertToCamelCase(refundData.json());
+    return refundData.json();
   }
 
   public async status(
     paymentId: string
-  ): Promise<{ status: string; financialStatus: string }> {
+  ): Promise<{ status: string; financial_status: string }> {
     try {
       const response = await this.retrieve(paymentId);
 
-      const { status, financialStatus } = convertToCamelCase(response);
-      return { status, financialStatus };
+      const { status, financial_status } = response;
+      return { status, financial_status };
     } catch (error) {
       console.error(error);
       throw new Error("Error retrieving payment status");

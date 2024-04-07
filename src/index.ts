@@ -1,2 +1,2 @@
 export * from "./apiClient";
-export * from "./ressources/payment";
+export * from "./transfa/ressources/payment";
