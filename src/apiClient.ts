@@ -1,8 +1,11 @@
-import PaymentResource from "./transfa/ressources/payment";
-import { PACKAGE_VERSION } from "./transfa/configs/version";
+import PaymentResource from "transfa/resources/payment";
+import WebhookRessource from "transfa/resources/webhook";
 
-import { Method } from "./transfa/types/types";
-import { TRANSFAPP_BASE_API_URL } from "transfa/configs/api_routes";
+import { PACKAGE_VERSION } from "transfa/configs/version";
+
+import { TRANSFAPP_BASE_API_URL } from "transfa/configs/apiRoutes";
+
+import { Method } from "transfa/types/types";
 import { TRANSFAPP_PACKAGE_USER_AGENT } from "transfa/constants";
 
 export class TransfaAPIClient {
@@ -78,4 +81,5 @@ export class TransfaAPIClient {
   }
 
   public Payment: PaymentResource = new PaymentResource(this);
+  public Webhook: WebhookRessource = new WebhookRessource(this.webhookToken);
 }

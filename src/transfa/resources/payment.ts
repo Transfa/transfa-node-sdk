@@ -1,7 +1,7 @@
 import { v4 as uuidV4 } from "uuid";
 
 import { TransfaAPIClient } from "apiClient";
-import { API_ROUTES } from "transfa/configs/api_routes";
+import { API_ROUTES } from "transfa/configs/apiRoutes";
 import {
   PaginateDataType,
   RequestPaymentPayloadType,
