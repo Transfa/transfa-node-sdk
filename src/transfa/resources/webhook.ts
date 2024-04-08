@@ -2,18 +2,22 @@ import { enc, HmacSHA512 } from "crypto-js";
 import { TransfaHeadersIdentifiers } from "transfa/types/enums";
 
 export default class WebhookResource {
-  private webhookToken: string;
+  private webhookToken?: string;
 
-  constructor(webhookToken: string) {
+  constructor(webhookToken?: string) {
+    this.webhookToken = webhookToken;
+  }
+
+  private validatePayload(
+    body?: unknown,
+    headers?: Record<string, string>,
+    webhookToken?: string
+  ) {
     if (!webhookToken) {
       throw new Error(
         "Can't work without a private secret for security reasons."
       );
     }
-    this.webhookToken = webhookToken;
-  }
-
-  private validatePayload(body: unknown, headers: Record<string, string>) {
     if (!body) {
       throw new Error("Can't work without the body of the request.");
     }
@@ -48,7 +52,7 @@ export default class WebhookResource {
   }
 
   public verify(body: unknown, headers: Record<string, string>): any {
-    this.validatePayload(body, headers);
+    this.validatePayload(body, headers, this.webhookToken);
 
     const signature = headers[TransfaHeadersIdentifiers.WebhookSignature];
 

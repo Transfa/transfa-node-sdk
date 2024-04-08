@@ -11,7 +11,7 @@ import { TRANSFAPP_PACKAGE_USER_AGENT } from "transfa/constants";
 export class TransfaAPIClient {
   private baseUrl: string = TRANSFAPP_BASE_API_URL;
   private version: string = PACKAGE_VERSION;
-  constructor(private apiKey: string, private webhookToken: string) {}
+  constructor(private apiKey: string, private webhookToken?: string) {}
 
   private getUrl(endpoint: string, params?: Record<string, string>): string {
     const baseUrl = this.baseUrl.endsWith("/")
@@ -42,7 +42,7 @@ export class TransfaAPIClient {
     const configHeaders: HeadersInit = {
       "user-agent": `${TRANSFAPP_PACKAGE_USER_AGENT}/${this.version}`,
       accept: "application/json",
-      Authorization: `Bearer ${this.apiKey}`,
+      Authorization: this.apiKey,
       ...headers,
     };
     const requestHeaders = new Headers(configHeaders);
